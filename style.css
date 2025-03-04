@@ -31,6 +31,38 @@ body, html {
     background-position: 0 0, 40px 60px, 130px 270px;
 }
 
+/* Gezegen ekleme */
+.planet {
+    position: fixed;
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 30% 30%, #a67c52, #794c23 40%, #3c2412 80%);
+    box-shadow: 0 0 20px rgba(255, 165, 0, 0.4), 
+                inset 0 -10px 20px rgba(0, 0, 0, 0.5);
+    top: 15%;
+    right: 15%;
+    z-index: -1;
+    /* Gezegen etrafında hafif bir parıltı */
+    filter: drop-shadow(0 0 10px rgba(255, 165, 0, 0.3));
+}
+
+/* Gezegen yüzeyindeki kraterler */
+.planet:before {
+    content: '';
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: rgba(0, 0, 0, 0.2);
+    top: 30px;
+    left: 40px;
+    box-shadow: 
+        60px 20px 0 -5px rgba(0, 0, 0, 0.1),
+        30px 70px 0 -3px rgba(0, 0, 0, 0.15),
+        80px 80px 0 -8px rgba(0, 0, 0, 0.1);
+}
+
 .container {
     display: flex;
     flex-direction: column;
@@ -50,6 +82,8 @@ h1 {
     display: flex;
     gap: 2rem;
     position: relative;
+    width: 300px; /* Butonlar için sabit genişlik */
+    justify-content: space-between; /* Butonları yan yana yerleştirme */
 }
 
 button {
@@ -59,7 +93,6 @@ button {
     border-radius: 5px;
     cursor: pointer;
     transition: transform 0.3s, box-shadow 0.3s;
-    position: relative;
 }
 
 button:hover {
@@ -75,7 +108,6 @@ button:hover {
 #bad-btn {
     background-color: #f44336;
     color: white;
-    position: absolute;
 }
 
 #result {
