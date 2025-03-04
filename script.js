@@ -17,10 +17,44 @@ document.addEventListener('DOMContentLoaded', function() {
     badBtn.addEventListener('mouseover', moveButton);
     badBtn.addEventListener('touchstart', moveButton); // Dokunmatik ekranlar için
     
+    // Dokunma başladığında bile kaçması için
+    badBtn.addEventListener('touchstart', function(e) {
+        e.preventDefault(); // Dokunma olayını engelle
+        
+        // Hızlı hareket için birkaç kez çağır
+        moveButton(e);
+        setTimeout(() => moveButton(e), 50);
+        setTimeout(() => moveButton(e), 100);
+        
+        // Sürekli hareket için interval başlat
+        startMoveInterval(50); // Çok daha hızlı interval (50ms)
+    });
+    
+    // Parmak yaklaştığında bile kaçması için
+    document.addEventListener('touchmove', function(e) {
+        // Dokunma noktasının koordinatlarını al
+        const touch = e.touches[0];
+        const touchX = touch.clientX;
+        const touchY = touch.clientY;
+        
+        // Butonun pozisyonunu ve boyutlarını al
+        const btnRect = badBtn.getBoundingClientRect();
+        
+        // Parmak butona yaklaşıyorsa (100px mesafede)
+        const distance = Math.sqrt(
+            Math.pow(touchX - (btnRect.left + btnRect.width/2), 2) + 
+            Math.pow(touchY - (btnRect.top + btnRect.height/2), 2)
+        );
+        
+        if (distance < 150) { // Parmak 150px yakınındaysa kaç
+            moveButton(e);
+        }
+    });
+    
     // Buton hareket fonksiyonu
     function moveButton(e) {
         // Dokunma olayını engelle
-        if (e.type === 'touchstart') {
+        if (e && e.type === 'touchstart') {
             e.preventDefault();
         }
         
@@ -55,7 +89,7 @@ document.addEventListener('DOMContentLoaded', function() {
             );
             
             // Eğer yeterince uzaksa döngüden çık
-            if (distance > 200 || (lastX === 0 && lastY === 0)) {
+            if (distance > 250 || (lastX === 0 && lastY === 0)) {
                 break;
             }
         } while (true);
@@ -69,20 +103,28 @@ document.addEventListener('DOMContentLoaded', function() {
         badBtn.style.left = randomX + 'px';
         badBtn.style.top = randomY + 'px';
         
-        // Butonun hızlı hareket etmesi için transition ekle
-        badBtn.style.transition = 'left 0.1s, top 0.1s';
+        // Butonun çok hızlı hareket etmesi için transition ekle
+        badBtn.style.transition = 'left 0.05s, top 0.05s';
+        
+        // Butonun boyutunu rastgele değiştir (tıklamayı zorlaştırmak için)
+        const randomSize = Math.floor(Math.random() * 30) + 70; // 70% ile 100% arası
+        badBtn.style.transform = `scale(${randomSize/100})`;
     }
     
     // Mobil cihazlar için ekstra kaçma davranışı
     let moveInterval;
     
+    function startMoveInterval(delay) {
+        // Eğer interval zaten çalışıyorsa temizle
+        clearInterval(moveInterval);
+        
+        // Yeni interval başlat
+        moveInterval = setInterval(moveButton, delay);
+    }
+    
     badBtn.addEventListener('touchmove', function(e) {
         e.preventDefault(); // Sayfanın kaydırılmasını engelle
-        
-        // Eğer interval zaten çalışmıyorsa başlat
-        if (!moveInterval) {
-            moveInterval = setInterval(moveButton, 300); // Her 300ms'de bir hareket et
-        }
+        startMoveInterval(50); // Çok daha hızlı interval
     });
     
     // Dokunma bittiğinde interval'i temizle
